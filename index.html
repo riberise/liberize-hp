@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>らくシフト｜介護の現場のためのシフト自動作成サービス</title>
+<meta name="description" content="らくシフトは、介護の現場のためのシフト自動作成サービス。職員さんの希望・事業所の決まりごと・夜勤の組み方をまとめて考えて、シフト案が数十秒でできあがります。人員基準・体制加算のチェックや勤務形態一覧表の出力まで、これひとつで。">
+<meta property="og:title" content="らくシフト｜介護の現場のためのシフト自動作成サービス">
+<meta property="og:description" content="職員さんの希望・事業所の決まりごと・夜勤の組み方をまとめて考えて、シフト案が数十秒で。人員基準・加算のチェックまで、これひとつ。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://portament-jp.github.io/rakushift/lp/">
+<meta property="og:image" content="https://portament-jp.github.io/rakushift/lp/assets/rakushift_logo.png">
+<link rel="icon" type="image/png" href="assets/rakushift_favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ============ 基礎 ============ */
+:root{
+  --brand:#67b371;        /* ブランドグリーン */
+  --brand-dk:#4f9a5b;     /* グリーン濃 */
+  --brand-deep:#3d7a47;   /* さらに濃い緑（文字用） */
+  --brand-pale:#e8f4ea;   /* グリーン淡 */
+  --brand-line:#bfe0c5;   /* グリーン淡（枠） */
+  --accent:#ee9444;       /* オレンジ（差し色） */
+  --accent-pale:#fdeedd;  /* オレンジ淡 */
+  --cream:#fdfaf3;        /* クリーム背景（温かみ） */
+  --ink:#4c4c4c;          /* 本文 */
+  --ink-strong:#3a4a40;   /* 見出し用の深緑グレー */
+  --sub:#6b6b6b;
+  --faint:#9a9a9a;
+  --line:#e7e4dc;         /* 罫線（温かめ） */
+  --ok:#1a8b46;
+  --sym-rest:#c0392b;     /* シフト記号: 休み系（製品と同一） */
+  --sym-work:#1f2933;     /* シフト記号: 出勤系（製品と同一） */
+  --sat:#e9f1fb;
+  --sun:#fcebee;
+  --shadow:0 1px 2px rgba(90,80,60,.06),0 5px 16px rgba(90,80,60,.08);
+  --shadow-lg:0 2px 4px rgba(90,80,60,.07),0 14px 34px rgba(90,80,60,.13);
+  --maru:"Klee One","Hiragino Maru Gothic ProN","Yu Gothic UI","Meiryo UI",sans-serif;
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  font-family:"BIZ UDPGothic","Yu Gothic UI","Meiryo UI","Hiragino Kaku Gothic ProN",sans-serif;
+  font-size:15px; line-height:2; color:var(--ink); background:#fff;
+  -webkit-font-smoothing:antialiased;
+  word-break:auto-phrase; /* 対応ブラウザでは文節の区切りで折り返す（「数十秒」等が途中で切れない） */
+}
+img{ max-width:100%; display:block; }
+a{ color:var(--brand-dk); }
+.wrap{ max-width:1060px; margin:0 auto; padding:0 22px; }
+
+.rv{ opacity:0; transform:translateY(14px); transition:opacity .6s ease, transform .6s ease; }
+.rv.on{ opacity:1; transform:none; }
+section[id]{ scroll-margin-top:84px; }
+a:focus-visible,.btn:focus-visible,summary:focus-visible{ outline:3px solid var(--brand); outline-offset:2px; border-radius:6px; }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  .rv{ opacity:1; transform:none; transition:none; }
+}
+
+/* ============ ボタン ============ */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border-radius:999px; padding:15px 30px; font-size:16px; font-weight:700;
+  font-family:var(--maru);
+  text-decoration:none; border:none; cursor:pointer; line-height:1.5;
+  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.btn-primary{ background:var(--brand); color:#fff; box-shadow:var(--shadow); }
+.btn-primary:hover{ background:var(--brand-dk); box-shadow:var(--shadow-lg); transform:translateY(-1px); }
+.btn-ghost{ background:#fff; color:var(--brand-deep); border:2px solid var(--brand-line); }
+.btn-ghost:hover{ background:var(--brand-pale); }
+.btn-sm{ padding:9px 20px; font-size:14px; }
+
+/* ============ 見出しまわり ============ */
+h1,h2,h3{ font-family:var(--maru); color:var(--ink-strong); letter-spacing:.02em; }
+h2{ font-size:27px; font-weight:900; line-height:1.7; margin-bottom:14px; }
+.sec-head{ text-align:center; margin-bottom:46px; }
+.sec-head p{ color:var(--sub); max-width:36em; margin:0 auto; }
+p.eyebrow{
+  display:inline-block; font-family:var(--maru); font-size:13px; font-weight:700;
+  color:var(--brand-dk); letter-spacing:.22em; margin-bottom:10px;
+  padding-bottom:2px; border-bottom:2.5px dotted var(--brand-line);
+}
+
+/* ロゴの「！」風かざり（オレンジ3本線） */
+.spark{ display:inline-block; width:30px; height:24px; vertical-align:-2px; margin-right:6px; }
+
+/* ============ ヘッダー ============ */
+.site-head{
+  position:sticky; top:0; z-index:50; background:rgba(255,255,255,.93);
+  backdrop-filter:blur(8px); border-bottom:1px solid transparent;
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+.site-head.scrolled{ border-color:var(--line); box-shadow:0 2px 10px rgba(90,80,60,.06); }
+.head-in{ display:flex; align-items:center; justify-content:space-between; height:68px; }
+.head-logo img{ height:64px; width:auto; margin-left:-12px; }
+.head-nav{ display:flex; align-items:center; gap:18px; }
+
+/* ============ ヒーロー ============ */
+.hero{ background:linear-gradient(180deg,#fff 0%, var(--cream) 100%); padding:56px 0 0; overflow:hidden; position:relative; }
+.hero::before{
+  content:""; position:absolute; width:520px; height:520px; border-radius:50%;
+  background:radial-gradient(circle, rgba(103,179,113,.13) 0%, rgba(103,179,113,0) 68%);
+  top:-160px; right:-120px; pointer-events:none;
+}
+.hero::after{
+  content:""; position:absolute; width:420px; height:420px; border-radius:50%;
+  background:radial-gradient(circle, rgba(238,148,68,.10) 0%, rgba(238,148,68,0) 68%);
+  bottom:-140px; left:-140px; pointer-events:none;
+}
+.hero-in{ display:flex; align-items:center; gap:44px; padding-bottom:70px; position:relative; z-index:1; }
+.hero-copy{ flex:1 1 500px; min-width:0; }
+.hero-tag{
+  display:inline-block; background:var(--brand-pale); border:1.5px solid var(--brand-line);
+  color:var(--brand-deep); font-size:13.5px; font-weight:700; font-family:var(--maru);
+  border-radius:999px; padding:5px 18px; margin-bottom:20px;
+}
+h1{ font-size:36px; font-weight:900; line-height:1.62; margin-bottom:18px; }
+h1 .hl{ color:var(--brand-dk); }
+.hero-lead{ font-size:16px; margin-bottom:28px; max-width:32em; }
+.hero-cta{ display:flex; flex-wrap:wrap; gap:14px; align-items:center; }
+
+/* ヒーロー右: 写真＋シフト表カード（人物が隠れないよう、重なりは写真の下端だけ） */
+.hero-visual{ flex:1 1 460px; min-width:0; position:relative; }
+.hero-photo{
+  border-radius:22px; border:9px solid #fff; box-shadow:var(--shadow-lg);
+  transform:rotate(1.6deg); overflow:hidden;
+}
+.hero-photo img{ width:100%; height:250px; object-fit:cover; object-position:50% 22%; }
+.hero-shift{
+  position:relative; margin:-40px 0 0 -14px; width:min(430px, 98%);
+  transform:rotate(-1.2deg);
+}
+
+/* シフト表ミニチュア（製品の実物風） */
+.shift-card{
+  background:#fff; border-radius:18px; box-shadow:var(--shadow-lg);
+  padding:16px 16px 12px;
+}
+.shift-card-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:10px; }
+.shift-title{ font-size:13.5px; font-weight:700; color:var(--ink-strong); font-family:var(--maru); }
+.done-pill{
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--brand-pale); border:1px solid var(--brand-line);
+  color:var(--brand-deep); font-size:12px; font-weight:700;
+  border-radius:999px; padding:3px 12px; white-space:nowrap;
+}
+.shift-scroll{ overflow-x:auto; }
+
+/* ヒーローの操作できるモックアップ（パレット配置＋自動作成） */
+.mock .shift-mini tbody td:not(.name-col){ cursor:pointer; }
+.mock .shift-mini tbody td:not(.name-col):hover{ outline:2px solid var(--brand); outline-offset:-2px; }
+.mock-hint{ font-size:11.5px; color:var(--sub); margin:10px 2px 6px; font-family:var(--maru); font-weight:600; }
+.mock-pal{ display:flex; flex-wrap:wrap; gap:6px; }
+.mock-pal .pl-chip{ cursor:pointer; font-family:inherit; font-size:12.5px; min-width:40px; padding:5px 8px; transition:border-color .15s ease, box-shadow .15s ease; }
+.mock-reset{
+  display:none; margin-right:auto; background:none; border:none; cursor:pointer;
+  color:var(--sub); font-size:12px; font-family:inherit; text-decoration:underline; padding:0 2px;
+}
+.mock.mock-done .mock-reset{ display:inline; }
+.mock-btn{
+  display:inline-flex; align-items:center; gap:6px; border:none; cursor:pointer;
+  background:var(--brand); color:#fff; font-family:var(--maru); font-weight:500;
+  font-size:12.5px; line-height:1.5; border-radius:999px; padding:5px 15px;
+  box-shadow:var(--shadow); transition:background .15s ease, opacity .2s ease;
+  white-space:nowrap;
+}
+.mock-btn:hover{ background:var(--brand-dk); }
+.mock.mock-run .mock-btn{ opacity:.65; pointer-events:none; }
+.mock-foot{ display:flex; justify-content:flex-end; margin-top:10px; min-height:26px; }
+.mock .done-pill{ opacity:0; transition:opacity .45s ease; }
+.mock.mock-done .done-pill{ opacity:1; }
+.shift-mini td{ transition:color .3s ease; }
+.shift-mini td.cell-wait{ color:transparent !important; } /* td.off の色指定より後勝ちさせる */
+table.shift-mini{ border-collapse:collapse; width:100%; }
+.shift-mini th,.shift-mini td{ border:1px solid #e5e9ee; text-align:center; white-space:nowrap; }
+.shift-mini thead th{
+  background:#f7f9fa; font-size:10.5px; color:var(--sub); font-weight:600;
+  padding:3px 0 2px; line-height:1.3; min-width:31px;
+}
+.shift-mini thead th .d{ display:block; font-size:12px; color:var(--ink-strong); font-weight:700; }
+.shift-mini thead th.sat{ background:var(--sat); }
+.shift-mini thead th.sun{ background:var(--sun); }
+.shift-mini .name-col{
+  background:#f7f9fa; font-size:12px; color:var(--ink-strong); font-weight:600;
+  padding:0 8px; min-width:56px; text-align:left;
+}
+.shift-mini td{ font-size:12px; font-weight:700; color:var(--sym-work); padding:6px 0; height:31px; }
+.shift-mini td.off{ color:var(--sym-rest); }
+.shift-mini tbody tr:nth-child(even) td{ background:#fafbfc; }
+.shift-mini td.sat{ background:var(--sat) !important; }
+.shift-mini td.sun{ background:var(--sun) !important; }
+
+/* 波の区切り */
+.wave{ display:block; width:100%; height:44px; }
+.hero > .wave{ position:relative; z-index:1; }
+
+/* ============ セクション共通 ============ */
+section{ padding:74px 0; }
+
+/* ============ お悩み（吹き出し） ============ */
+.sec-pain{ background:#fff; }
+.pain-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.bubble{
+  background:var(--cream); border:1.5px solid var(--line); border-radius:20px;
+  padding:24px 22px 20px; position:relative;
+}
+.bubble::after{
+  content:""; position:absolute; left:34px; bottom:-11px;
+  width:20px; height:20px; background:var(--cream);
+  border-right:1.5px solid var(--line); border-bottom:1.5px solid var(--line);
+  transform:rotate(45deg) skew(8deg,8deg);
+}
+.bubble p{ font-size:14.5px; color:var(--ink); font-weight:500; }
+.bubble .who{
+  display:flex; align-items:center; gap:10px; margin-top:26px;
+}
+.bubble .face{
+  width:40px; height:40px; border-radius:999px; background:var(--brand-pale);
+  display:flex; align-items:center; justify-content:center; color:var(--brand-deep); flex-shrink:0;
+}
+.bubble .who span{ font-size:12.5px; color:var(--sub); font-weight:600; }
+.pain-close{
+  text-align:center; margin-top:46px; font-size:20px; font-weight:900;
+  font-family:var(--maru); color:var(--ink-strong);
+}
+.pain-close .hl{ color:var(--brand-dk); }
+
+/* ============ 3つの流れ（番号なし・ことばで） ============ */
+.sec-steps{ background:var(--brand-pale); }
+.steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.step-card{
+  background:#fff; border-radius:20px; box-shadow:var(--shadow); padding:30px 26px;
+  position:relative; transition:transform .2s ease, box-shadow .2s ease;
+}
+.step-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow-lg); }
+@media (min-width:901px){
+  .step-card:not(:last-child)::after{
+    content:""; position:absolute; right:-17px; top:50%; width:12px; height:12px;
+    border-top:3px solid var(--brand); border-right:3px solid var(--brand);
+    transform:translateY(-50%) rotate(45deg); opacity:.6;
+  }
+}
+.step-card h3{ font-size:17.5px; font-weight:700; margin-bottom:8px; }
+.step-card p{ font-size:14px; color:var(--sub); }
+.steps-note{ text-align:center; margin-top:30px; font-size:13.5px; color:var(--sub); }
+
+/* ============ いままでとのちがい ============ */
+.sec-diff{ background:#fff; }
+.diff-cols{ display:grid; grid-template-columns:1fr 1.15fr; gap:24px; align-items:stretch; }
+.diff-col{ border-radius:20px; padding:30px 28px; }
+.diff-col.before{ background:#f4f2ec; border:1.5px solid var(--line); }
+.diff-col.after{ background:var(--brand-pale); border:1.5px solid var(--brand-line); }
+.diff-col h3{
+  font-size:18px; font-weight:900; margin-bottom:18px; text-align:center;
+}
+.diff-col.before h3{ color:#7c776b; }
+.diff-col.after h3{ color:var(--brand-deep); }
+.diff-col ul{ list-style:none; }
+.diff-col li{
+  display:flex; gap:12px; align-items:flex-start;
+  font-size:14.5px; padding:11px 0; border-top:1px dashed rgba(0,0,0,.09);
+}
+.diff-col li:first-child{ border-top:none; }
+.diff-col.before li{ color:#6d685d; }
+.diff-col li .m{ flex-shrink:0; font-weight:800; margin-top:1px; }
+.diff-col.before li .m{ color:#b0a893; }
+.diff-col.after li .m{ color:var(--ok); }
+
+/* 他の自動作成ソフトとのちがい */
+.uniq{ margin-top:64px; }
+.uniq-head{ text-align:center; margin-bottom:36px; }
+.uniq-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.uniq-card{
+  background:var(--cream); border:1.5px solid var(--line); border-radius:20px; padding:28px 24px;
+  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.uniq-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); border-color:var(--brand-line); }
+.uniq-card .u-ico{
+  width:52px; height:52px; border-radius:16px; background:#fff; border:1.5px solid var(--brand-line);
+  display:flex; align-items:center; justify-content:center; color:var(--brand-dk); margin-bottom:14px;
+}
+.uniq-card h3{ font-size:16.5px; font-weight:700; margin-bottom:8px; line-height:1.8; }
+.uniq-card p{ font-size:13.5px; color:var(--sub); }
+
+/* ちがい4: 優先度を変えて再作成（製品の「自動作成条件の優先度」パネルを模したモック） */
+.uniq .prio-deep{ margin-top:56px; }
+.prio-h{ font-size:22px; font-weight:600; line-height:1.7; margin-bottom:12px; color:var(--ink-strong); }
+.prio-card{
+  background:#fff; border-radius:20px; box-shadow:var(--shadow-lg);
+  padding:20px 20px 18px; max-width:480px; margin:0 auto;
+}
+.prio-card .p-title{
+  font-family:var(--maru); font-weight:600; font-size:14px; color:var(--ink-strong); margin-bottom:10px;
+}
+.prio-cols,.prio-row{
+  display:grid; grid-template-columns:58px 1fr 52px 56px; gap:8px; align-items:center;
+}
+.prio-cols{ font-size:10.5px; color:var(--faint); padding:0 11px 5px; }
+.prio-row{
+  border:1.5px solid var(--line); border-radius:12px; padding:9px 10px; background:#fff;
+  font-size:12.5px; cursor:grab;
+}
+.prio-row + .prio-row{ margin-top:8px; }
+.prio-row .no{ color:var(--brand-deep); font-weight:600; font-size:11.5px; font-family:var(--maru); white-space:nowrap; }
+.prio-row .nm{ color:var(--ink-strong); font-weight:700; }
+.prio-row .dash{ color:var(--faint); text-align:center; }
+.prio-row .bd{
+  justify-self:center; background:#fdecea; color:#c0392b; border-radius:999px;
+  font-size:11px; font-weight:700; padding:1px 9px; white-space:nowrap;
+}
+.prio-row .ud{ display:flex; gap:4px; justify-content:flex-end; }
+.prio-row .ud-btn{
+  width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center;
+  border:1.5px solid var(--line); border-radius:7px; font-size:11px; color:var(--sub); background:#fff;
+}
+.prio-row.drag{ border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-pale); transform:rotate(-.6deg); }
+.prio-foot{ display:flex; gap:10px; justify-content:flex-end; margin-top:14px; flex-wrap:wrap; }
+.pf-btn{
+  display:inline-flex; align-items:center; border-radius:999px; padding:8px 18px;
+  font-size:13px; font-weight:600; font-family:var(--maru); line-height:1.5;
+}
+.pf-btn.primary{ background:var(--brand); color:#fff; box-shadow:var(--shadow); }
+.pf-btn.ghost{ background:#fff; color:var(--brand-deep); border:2px solid var(--brand-line); }
+
+/* ============ 機能 ============ */
+.sec-feat{ background:var(--cream); }
+.feat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.feat-card{
+  background:#fff; border:1.5px solid var(--line); border-radius:20px; padding:26px 24px;
+  transition:box-shadow .2s ease, border-color .2s ease;
+}
+.feat-card:hover{ box-shadow:var(--shadow); border-color:var(--brand-line); }
+.feat-ico{
+  width:48px; height:48px; border-radius:14px; background:var(--brand-pale);
+  color:var(--brand-deep); display:flex; align-items:center; justify-content:center; margin-bottom:14px;
+}
+/* アイコンはviewBoxを字形基準の正方形に正規化して大きさを統一（線の太さは固定） */
+.feat-ico svg *,.u-ico svg *{ vector-effect:non-scaling-stroke; }
+.feat-card h3{ font-size:16px; font-weight:700; margin-bottom:6px; line-height:1.8; }
+.feat-card p{ font-size:13.5px; color:var(--sub); }
+.feat-more{ margin-top:34px; text-align:center; }
+.feat-more .lbl{ font-size:14px; color:var(--sub); font-weight:700; margin-bottom:14px; font-family:var(--maru); }
+.more-pills{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+.more-pill{
+  background:#fff; border:1.5px solid var(--line); border-radius:999px;
+  padding:8px 20px; font-size:13.5px; font-weight:600; color:var(--ink);
+}
+
+/* ============ 深掘り ============ */
+.sec-deep{ overflow:hidden; }
+.deep{ display:flex; align-items:center; gap:52px; }
+.deep + .deep{ margin-top:88px; }
+.deep-txt{ flex:1 1 470px; min-width:0; }
+.deep-vis{ flex:1 1 430px; min-width:0; }
+.deep h2{ margin-bottom:16px; }
+.deep p{ max-width:31em; }
+.deep .note{ font-size:12.5px; color:var(--faint); margin-top:14px; }
+@media (min-width:901px){ .deep.rev{ flex-direction:row-reverse; } }
+
+.judge-card{ background:#fff; border-radius:20px; box-shadow:var(--shadow-lg); padding:20px; max-width:460px; margin:0 auto; }
+.judge-head{
+  font-size:14px; font-weight:700; color:var(--ink-strong); margin-bottom:14px;
+  display:flex; align-items:center; justify-content:space-between; font-family:var(--maru);
+}
+.judge-row{ display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border:1.5px solid var(--line); border-radius:14px; }
+.judge-row + .judge-row{ margin-top:10px; }
+.judge-row .mark{
+  width:28px; height:28px; border-radius:999px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; margin-top:4px;
+}
+.judge-row.ok .mark{ background:var(--brand-pale); color:var(--ok); }
+.judge-row.warn .mark{ background:var(--accent-pale); color:var(--accent); }
+.judge-row b{ display:block; font-size:14px; color:var(--ink-strong); line-height:1.7; }
+.judge-row span.desc{ font-size:12.5px; color:var(--sub); }
+.judge-row.warn span.desc{ color:#c77324; }
+
+/* かんたん編集: 記号パレット（操作できるモックで使用） */
+.pl-chip{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:42px; padding:6px 9px; background:#fff; border:1.5px solid #dfe3e8;
+  border-radius:10px; font-size:13px; font-weight:700; color:var(--sym-work);
+}
+.pl-chip.off{ color:var(--sym-rest); }
+.pl-chip.sel{ border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-pale); }
+.easy-mock{ max-width:470px; margin:0 auto; box-shadow:var(--shadow-lg); }
+
+/* ============ FAQ ============ */
+.sec-faq{ background:#fff; }
+.faq-list{ max-width:760px; margin:0 auto; }
+details.faq{ background:var(--cream); border:1.5px solid var(--line); border-radius:16px; margin-bottom:12px; overflow:hidden; }
+details.faq summary{
+  list-style:none; cursor:pointer; padding:18px 52px 18px 20px;
+  font-size:15.5px; font-weight:700; color:var(--ink-strong); position:relative;
+  display:flex; align-items:baseline; gap:12px; line-height:1.8; font-family:var(--maru);
+}
+details.faq summary::-webkit-details-marker{ display:none; }
+details.faq summary .q{ color:var(--brand-dk); font-weight:900; flex-shrink:0; }
+details.faq summary::after{
+  content:"＋"; position:absolute; right:20px; top:16px; color:var(--brand);
+  font-size:18px; font-weight:800; transition:transform .2s ease;
+}
+details.faq[open] summary::after{ content:"−"; }
+details.faq .faq-a{ padding:0 20px 18px 20px; font-size:14px; color:var(--sub); display:flex; gap:12px; align-items:baseline; }
+details.faq .faq-a .a{ color:var(--accent); font-weight:900; flex-shrink:0; font-family:var(--maru); }
+
+/* ============ 締めCTA ============ */
+.sec-cta{ background:var(--brand-pale); padding:0 0 84px; overflow:hidden; }
+.cta-box{
+  display:flex; align-items:center; gap:44px;
+  padding-top:80px;
+}
+.cta-txt{ flex:1 1 500px; min-width:0; }
+.cta-txt h2{ font-size:28px; }
+.cta-txt .cta-lead{ color:var(--sub); margin-bottom:30px; }
+.cta-btns{ display:flex; flex-wrap:wrap; gap:16px; }
+.cta-mail{ margin-top:18px; font-size:13px; color:var(--sub); }
+.cta-photo-wrap{ flex:1 1 380px; min-width:0; }
+.cta-photo{
+  border-radius:22px; border:9px solid #fff; box-shadow:var(--shadow-lg);
+  transform:rotate(1.6deg); overflow:hidden; max-width:440px; margin:0 auto;
+}
+.cta-photo img{ width:100%; height:280px; object-fit:cover; object-position:50% 30%; /* 3人の顔が入る高さに */ }
+
+/* ============ フッター ============ */
+.site-foot{ background:#fff; border-top:1.5px solid var(--line); padding:34px 0 42px; }
+.foot-in{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; }
+.foot-brand{ font-size:15px; font-weight:900; color:var(--ink-strong); font-family:var(--maru); }
+.foot-brand .en{ font-size:12px; color:var(--faint); font-weight:600; margin-left:8px; font-family:inherit; }
+.foot-right{ font-size:12.5px; color:var(--sub); text-align:right; }
+.foot-right a{ color:var(--sub); }
+.foot-right a:hover{ color:var(--brand-dk); }
+.foot-copy{ color:var(--faint); margin-top:4px; }
+
+/* Klee One の最大ウェイトは600（900指定のままだと疑似ボールドで文字が潰れる） */
+h1,h2,h3,.btn,.hero-tag,.pain-close,.shift-title,.judge-head,.pal-label,details.faq summary,.faq-a .a,.foot-brand,.feat-more .lbl,p.eyebrow,.done-pill,.mock-btn{ font-weight:600; }
+
+/* ============ レスポンシブ ============ */
+@media (max-width:900px){
+  .hero-in{ flex-direction:column; gap:34px; padding-bottom:56px; }
+  h1{ font-size:26px; }
+  section{ padding:56px 0; }
+  h2{ font-size:23px; }
+  .pain-grid,.steps,.feat-grid,.uniq-grid{ grid-template-columns:1fr 1fr; }
+  .diff-cols{ grid-template-columns:1fr; }
+  .deep{ flex-direction:column; gap:34px; }
+  .deep-txt{ order:1; } .deep-vis{ order:2; }
+  .cta-box{ flex-direction:column; gap:36px; padding-top:64px; }
+}
+@media (max-width:600px){
+  .pain-grid,.steps,.feat-grid,.uniq-grid{ grid-template-columns:1fr; }
+  .head-logo img{ height:48px; }
+  .btn{ padding:13px 24px; font-size:15px; }
+  h1{ font-size:23.5px; }
+  .cta-txt h2{ font-size:23px; }
+  .shift-mini thead th{ min-width:29px; }
+  .hero-photo img{ height:230px; }
+  .foot-in{ flex-direction:column; align-items:flex-start; }
+  .foot-right{ text-align:left; }
+}
+@media (max-width:480px){
+  .head-nav{ gap:10px; }
+  .uniq-head h2 br{ display:none; } /* 狭い画面では自然な折り返しに任せる */
+}
+</style>
+</head>
+<body>
+
+<!-- ============ ヘッダー ============ -->
+<header class="site-head" id="siteHead">
+  <div class="wrap head-in">
+    <a class="head-logo" href="#" aria-label="らくシフト">
+      <img src="assets/rakushift_logo.png" alt="らくシフト">
+    </a>
+    <nav class="head-nav">
+      <a class="btn btn-primary btn-sm" href="contact.html">お問い合わせ</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ ヒーロー ============ -->
+<div class="hero">
+  <div class="wrap hero-in">
+    <div class="hero-copy">
+      <span class="hero-tag">介護の現場のためのシフト自動作成サービス</span>
+      <h1>希望も、夜勤の決まりも、<br>加算も。<span class="hl">ぜんぶ考えてくれる</span><br>シフト表。</h1>
+      <p class="hero-lead">
+        らくシフトは、介護の現場のためのシフト自動作成サービスです。
+        職員さんの希望、事業所の決まりごと、夜勤の組み方をまとめて考えて、
+        シフト案が数十秒でできあがります。
+        人員基準や体制加算のチェックまで、これひとつ。
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="contact.html">お問い合わせ・デモのご相談</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-photo">
+        <img src="assets/photos/jp-care-walk.jpg" alt="屋外の散歩に付き添う介護職員と、車椅子で笑顔の高齢男性（イメージ）">
+      </div>
+      <div class="hero-shift shift-card mock" id="mockCard">
+        <div class="shift-card-head">
+          <span class="shift-title">7月の予定シフト</span>
+          <button class="mock-btn" id="mockBtn" type="button" aria-label="シフト自動作成のデモをもう一度見る">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 3l2 4.5L18.5 9 14 11.5 12 16l-2-4.5L5.5 9 10 6.5z"/></svg>
+            <span class="mb-label">自動作成</span>
+          </button>
+        </div>
+        <div class="shift-scroll">
+          <table class="shift-mini" aria-label="シフト表のデモ（記号をえらんでマスをタップすると配置できます）">
+            <thead>
+              <tr>
+                <th class="name-col"></th>
+                <th><span class="d">1</span>水</th>
+                <th><span class="d">2</span>木</th>
+                <th><span class="d">3</span>金</th>
+                <th class="sat"><span class="d">4</span>土</th>
+                <th class="sun"><span class="d">5</span>日</th>
+                <th><span class="d">6</span>月</th>
+                <th><span class="d">7</span>火</th>
+                <th><span class="d">8</span>水</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="name-col">佐藤</td>
+                <td></td><td></td><td></td><td class="sat"></td><td class="sun"></td><td></td><td></td><td></td>
+              </tr>
+              <tr>
+                <td class="name-col">鈴木</td>
+                <td></td><td></td><td></td><td class="sat"></td><td class="sun"></td><td></td><td></td><td></td>
+              </tr>
+              <tr>
+                <td class="name-col">高橋</td>
+                <td></td><td></td><td></td><td class="sat"></td><td class="sun"></td><td></td><td></td><td></td>
+              </tr>
+              <tr>
+                <td class="name-col">田中</td>
+                <td></td><td></td><td></td><td class="sat"></td><td class="sun"></td><td></td><td></td><td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mock-hint">① 記号をえらんで、マスをタップ　② 残りは「自動作成」におまかせ</p>
+        <div class="mock-pal" role="group" aria-label="シフト記号のパレット（デモ）">
+          <button type="button" class="pl-chip">早①</button>
+          <button type="button" class="pl-chip sel">日①</button>
+          <button type="button" class="pl-chip">遅①</button>
+          <button type="button" class="pl-chip">夜</button>
+          <button type="button" class="pl-chip">明</button>
+          <button type="button" class="pl-chip off">公</button>
+        </div>
+        <div class="mock-foot">
+          <button class="mock-reset" id="mockReset" type="button">やり直す</button>
+          <span class="done-pill">✓ 自動作成が完了しました</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 44" preserveAspectRatio="none" aria-hidden="true"><path d="M0,26 C240,46 480,4 720,16 C960,28 1200,42 1440,18 L1440,44 L0,44 Z" fill="#ffffff"/></svg>
+</div>
+
+<!-- ============ お悩み（吹き出し） ============ -->
+<section class="sec-pain">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="eyebrow">よくあるお悩み</p>
+      <h2><svg class="spark" viewBox="0 0 30 24" fill="none" stroke="#ee9444" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 20L10 13M15 18l0-8M24 20l-4-7"/></svg>シフト表づくり、こんなことに<br>なっていませんか。</h2>
+    </div>
+    <div class="pain-grid">
+      <div class="bubble rv">
+        <p>今月もシフト表とにらめっこ。気づいたら、お休みの日が一日つぶれていた…。</p>
+        <div class="who">
+          <span class="face" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20c1.5-3.5 4.2-5 7.5-5s6 1.5 7.5 5"/></svg>
+          </span>
+          <span>特養の介護主任さん</span>
+        </div>
+      </div>
+      <div class="bubble rv">
+        <p>夜勤明けの次は公休、連勤は5日まで、あの人とあの人は別の日に…。考えることが多すぎる！</p>
+        <div class="who">
+          <span class="face" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20c1.5-3.5 4.2-5 7.5-5s6 1.5 7.5 5"/></svg>
+          </span>
+          <span>グループホームの施設長さん</span>
+        </div>
+      </div>
+      <div class="bubble rv">
+        <p>人員基準や加算の要件、ほんとうに満たせている？</p>
+        <div class="who">
+          <span class="face" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20c1.5-3.5 4.2-5 7.5-5s6 1.5 7.5 5"/></svg>
+          </span>
+          <span>デイサービスの事務さん</span>
+        </div>
+      </div>
+    </div>
+    <p class="pain-close rv">その悩み、シフト表づくりの<span class="hl">「しくみ」</span>で解決できます。</p>
+  </div>
+</section>
+
+<!-- ============ 3つの流れ ============ -->
+<section class="sec-steps">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="eyebrow">つかいかた</p>
+      <h2>らくシフトの使い方は、たったこれだけ。</h2>
+    </div>
+    <div class="steps">
+      <div class="step-card rv">
+        <h3>決まりごとを登録します</h3>
+        <p>「夜勤の次は明け、その次はお休み」「土日はどちらか休み」。事業所と職員さんの決まりごとを、画面の案内にそって登録します。最初の一回だけです。</p>
+      </div>
+      <div class="step-card rv">
+        <h3>希望を入れます</h3>
+        <p>職員さんのお休みの希望・勤務の希望を、カレンダーに入れるだけ。むずかしい操作はありません。</p>
+      </div>
+      <div class="step-card rv">
+        <h3>ボタンをひとつ押すだけ</h3>
+        <p>決まりごとと希望をまとめて考えたシフト案が、数十秒でできあがります。あとは気になるところを手直しするだけ。</p>
+      </div>
+    </div>
+    <p class="steps-note rv">できあがったシフト表は、そのまま印刷したり、勤怠のソフトに渡したりできます。</p>
+  </div>
+</section>
+
+<!-- ============ いままでとのちがい ============ -->
+<section class="sec-diff">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="eyebrow">くらべてみると</p>
+      <h2>手づくりのシフト表と、なにがちがうの？</h2>
+    </div>
+    <div class="diff-cols">
+      <div class="diff-col before rv">
+        <h3>いままで</h3>
+        <ul>
+          <li><span class="m">•</span>希望を集めて、にらめっこしながら手で埋める</li>
+          <li><span class="m">•</span>夜勤明け・公休・連勤の決まりは、ぜんぶ頭の中</li>
+          <li><span class="m">•</span>人員基準や加算の確認は、別の紙や電卓で</li>
+          <li><span class="m">•</span>行政に出す勤務形態一覧表は、手で書き写す</li>
+        </ul>
+      </div>
+      <div class="diff-col after rv">
+        <h3>らくシフトなら</h3>
+        <ul>
+          <li><span class="m">✓</span>希望を入れてボタンを押すだけ。数十秒で案ができる</li>
+          <li><span class="m">✓</span>決まりごとは最初に登録すれば、自動でぜんぶ考えてくれる</li>
+          <li><span class="m">✓</span>人員基準・体制加算は、シフトを作るたびに自動チェック</li>
+          <li><span class="m">✓</span>国の様式の勤務形態一覧表も、ボタンひとつで出力</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="uniq">
+      <div class="uniq-head rv">
+        <p class="eyebrow">らくシフトならでは</p>
+        <h2>自動作成のソフトは、ほかにもあります。<br>らくシフトのちがいは、この4つ。</h2>
+      </div>
+      <div class="uniq-grid">
+        <div class="uniq-card rv">
+          <div class="u-ico" aria-hidden="true">
+            <svg width="26" height="26" viewBox="2.5 3 19 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11L12 4.5 19.5 11"/><path d="M6.5 10v10.5h11V10"/><path transform="translate(7.5 11) scale(.38)" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" style="fill:var(--accent); stroke:none"/></svg>
+          </div>
+          <h3>介護の決まりごとに、最初から対応</h3>
+          <p>夜勤→明け→公休のセット、資格を持つ人の夜勤配置、ユニットごとの人数。介護のシフトに必要な考え方が、はじめから入っています。</p>
+        </div>
+        <div class="uniq-card rv">
+          <div class="u-ico" aria-hidden="true">
+            <svg width="26" height="26" viewBox="1 1.5 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="16" rx="2.5"/><path d="M2.5 9.5h19M9 9.5v11M15.5 9.5v11"/><path d="M10.8 13.5l2.9 2.9M13.7 13.5l-2.9 2.9" style="stroke:var(--accent)"/></svg>
+          </div>
+          <h3>「できたフリ」をしません</h3>
+          <p>すべての条件を守れないとき、守れなかった予定はハイライトして、守れない理由までお見せします。</p>
+        </div>
+        <div class="uniq-card rv">
+          <div class="u-ico" aria-hidden="true">
+            <svg width="26" height="26" viewBox="2 1.5 21.2 21.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5.5V3h11.5v14.5"/><rect x="4" y="6" width="11.5" height="15" rx="2"/><path d="M7.5 10.5H12M7.5 13.5h3"/><circle cx="16.8" cy="16.8" r="4.4" style="stroke:var(--accent)"/><circle cx="16.8" cy="16.8" r="1.7" style="stroke:var(--accent)"/></svg>
+          </div>
+          <h3>加算・提出書類まで、これひとつ</h3>
+          <p>人員基準・体制加算の自動チェックに、国の様式にそった勤務形態一覧表の出力まで。</p>
+        </div>
+      </div>
+
+      <div class="deep prio-deep">
+        <div class="deep-txt rv">
+          <h3 class="prio-h">できあがったあとも、<br>優先度を変えて作り直せます。</h3>
+          <p>
+            自動作成ですべての条件を守りきれなかったときは、「どの決まりを優先して守るか」の順番を、
+            つかんで入れ替えるだけ。あとはボタンひとつで、その優先度のとおりに作り直します。
+          </p>
+        </div>
+        <div class="deep-vis rv">
+          <div class="prio-card">
+            <div class="p-title">自動作成条件の優先度</div>
+            <div class="prio-cols"><span>優先度</span><span>条件</span><span>今回の違反</span><span>並べ替え</span></div>
+            <div class="prio-row">
+              <span class="no">優先度1</span><span class="nm">各シフトの必要人数</span><span class="dash">—</span>
+              <span class="ud"><span class="ud-btn">↑</span><span class="ud-btn">↓</span></span>
+            </div>
+            <div class="prio-row drag">
+              <span class="no">優先度2</span><span class="nm">公休日数</span><span class="bd">2件</span>
+              <span class="ud"><span class="ud-btn">↑</span><span class="ud-btn">↓</span></span>
+            </div>
+            <div class="prio-row">
+              <span class="no">優先度3</span><span class="nm">連続出勤可能日数</span><span class="dash">—</span>
+              <span class="ud"><span class="ud-btn">↑</span><span class="ud-btn">↓</span></span>
+            </div>
+            <div class="prio-foot">
+              <span class="pf-btn primary">この優先度で再作成</span>
+              <span class="pf-btn ghost">キャンセル</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 機能 ============ -->
+<section class="sec-feat">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="eyebrow">できること</p>
+      <h2>シフトのお仕事、はじめから終わりまで。</h2>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card rv">
+        <div class="feat-ico" aria-hidden="true">
+          <svg width="24" height="24" viewBox="1 -0.9 23.1 23.1" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="15" height="13" rx="3.5"/><path d="M6.5 3.5v3.4M13.5 3.5v3.4M2.5 10.5h15"/><path d="M19.5 2.8l1 2.1 2.1 1-2.1 1-1 2.1-1-2.1-2.1-1 2.1-1z" style="stroke:var(--accent)"/></svg>
+        </div>
+        <h3>数十秒でシフト案を自動作成</h3>
+        <p>希望・必要な人数・連勤の上限・公休の数・夜勤のセット・資格・相性まで、まとめて考えます。</p>
+      </div>
+      <div class="feat-card rv">
+        <div class="feat-ico" aria-hidden="true">
+          <svg width="24" height="24" viewBox="2 1.49 21.62 21.62" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="7.8" r="3.8"/><path d="M3.5 20.5c1.3-3.7 3.6-5.4 6.5-5.4 1.5 0 2.8.4 3.9 1.3"/><path d="M17.7 20.6l-2.4-2.5c-.9-1-.8-2.4.2-3.2.9-.7 2.2-.5 2.9.4.7-.9 2-1.1 2.9-.4 1 .8 1.1 2.2.2 3.2z" style="stroke:var(--accent); fill:var(--accent-pale)"/></svg>
+        </div>
+        <h3>職員さんごとの働き方も細かく</h3>
+        <p>「夜勤は続けて入りたい」「土日はどちらか休み」「週3日まで」。ひとりひとりの事情に合わせられます。</p>
+      </div>
+      <div class="feat-card rv">
+        <div class="feat-ico" aria-hidden="true">
+          <svg width="24" height="24" viewBox="2.2 2.2 20.3 20.3" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.8"/><path d="M15.6 15.6L21 21"/><path d="M10.5 7.4v3.6M10.5 13.9v.1" style="stroke:var(--accent)"/></svg>
+        </div>
+        <h3>条件を守れなかったマスはハイライト</h3>
+        <p>ハイライトでどの条件がどうして守れなかったのかがわかります。</p>
+      </div>
+      <div class="feat-card rv">
+        <div class="feat-ico" aria-hidden="true">
+          <svg width="24" height="24" viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="3"/><path d="M8.5 6.5h7"/><path d="M8.5 11h.1M12 11h.1M15.5 11h.1M8.5 14.5h.1M12 14.5h.1M8.5 18h.1M12 18h.1"/><path d="M15.5 14.5V18" style="stroke:var(--accent)"/></svg>
+        </div>
+        <h3>人員基準・体制加算を自動チェック</h3>
+        <p>特養・ショートステイ・デイサービスなど、主要な介護サービスに対応。加算の取りこぼしを防ぐお手伝いをします。</p>
+      </div>
+      <div class="feat-card rv">
+        <div class="feat-ico" aria-hidden="true">
+          <svg width="24" height="24" viewBox="1.5 1.74 21.86 21.86" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13.3h5.3v5.3H3z"/><path d="M8.3 13.3h5.3v5.3H8.3z" style="fill:var(--brand-pale)"/><path d="M12.4 13.5l6.2-6.2a1.9 1.9 0 0 1 2.7 2.7l-6.2 6.2-3.7 1z" style="stroke:var(--accent)"/></svg>
+        </div>
+        <h3>手直しは、塗り絵のように</h3>
+        <p>記号をえらんで、マスを塗るだけ。コピーも入れ替えも、メモの書き込みもかんたんです。</p>
+      </div>
+      <div class="feat-card rv">
+        <div class="feat-ico" aria-hidden="true">
+          <svg width="24" height="24" viewBox="1.5 1.5 21 21" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 3h9l4 4.2V21h-13z"/><path d="M14.5 3v4.2h4"/><path d="M9 12.5h6M9 16.5h4" style="stroke:var(--accent)"/></svg>
+        </div>
+        <h3>提出書類・印刷・勤怠連携まで</h3>
+        <p>国の様式の勤務形態一覧表、シフト表のPDF印刷、勤怠ソフトへ渡すCSVの出力までできます。</p>
+      </div>
+    </div>
+    <div class="feat-more rv">
+      <p class="lbl">ほかにも、こんなことができます</p>
+      <div class="more-pills">
+        <span class="more-pill">併設事業所との連携・応援職員の組み込み</span>
+        <span class="more-pill">フロア・ユニットごとの配置表</span>
+        <span class="more-pill">勤務実績の記録（欠勤・急なお休みも）</span>
+        <span class="more-pill">見られる人・直せる人の権限設定</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 深掘り ============ -->
+<section class="sec-deep" style="background:#fff;">
+  <div class="wrap">
+
+    <div class="deep">
+      <div class="deep-txt rv">
+        <h2>シフト表の先にある「加算」まで、<br>見ています。</h2>
+        <p>
+          介護のシフトは、作って終わりではありません。人員配置基準を満たせているか、
+          体制加算の要件をクリアできているか——収益に直結する確認を、らくシフトは自動で行います。
+          特養・ショートステイ・デイサービスなど、主要な介護サービスに対応しています。
+        </p>
+        <p class="note">※判定は、登録された職員情報とシフトにもとづく確認の支援です。</p>
+      </div>
+      <div class="deep-vis rv">
+        <div class="judge-card">
+          <div class="judge-head">人員基準・加算の判定</div>
+          <div class="judge-row ok">
+            <span class="mark">○</span>
+            <div><b>介護・看護職員の配置（3:1）</b><span class="desc">基準を満たしています</span></div>
+          </div>
+          <div class="judge-row ok">
+            <span class="mark">○</span>
+            <div><b>夜勤職員配置加算</b><span class="desc">要件を満たしています</span></div>
+          </div>
+          <div class="judge-row warn">
+            <span class="mark">△</span>
+            <div><b>日常生活継続支援加算</b><span class="desc">満たせていない項目があります（押すと詳細）</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="deep rev">
+      <div class="deep-txt rv">
+        <h2>パソコンが苦手でも、<br>だいじょうぶ。</h2>
+        <p>
+          画面の案内にそって進めるだけの、シフト作成ウィザード。
+          シフト表の手直しは、記号をえらんでマスを塗るだけ。
+          「あの人にしか作れない」シフトのお仕事を、チームのお仕事に変えます。
+        </p>
+      </div>
+      <div class="deep-vis rv">
+        <div class="shift-card mock easy-mock">
+          <div class="shift-card-head">
+            <span class="shift-title">7月の予定シフト</span>
+            <button class="mock-btn" type="button" aria-label="シフト自動作成のデモを実行">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 3l2 4.5L18.5 9 14 11.5 12 16l-2-4.5L5.5 9 10 6.5z"/></svg>
+              <span class="mb-label">自動作成</span>
+            </button>
+          </div>
+          <div class="shift-scroll">
+            <table class="shift-mini" aria-label="シフト表のデモ（記号をえらんでマスをタップすると配置できます）">
+              <thead>
+                <tr>
+                  <th class="name-col"></th>
+                  <th><span class="d">1</span>水</th>
+                  <th><span class="d">2</span>木</th>
+                  <th><span class="d">3</span>金</th>
+                  <th class="sat"><span class="d">4</span>土</th>
+                  <th class="sun"><span class="d">5</span>日</th>
+                  <th><span class="d">6</span>月</th>
+                  <th><span class="d">7</span>火</th>
+                  <th><span class="d">8</span>水</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="name-col">佐藤</td>
+                  <td></td><td></td><td></td><td class="sat"></td><td class="sun"></td><td></td><td></td><td></td>
+                </tr>
+                <tr>
+                  <td class="name-col">鈴木</td>
+                  <td></td><td></td><td></td><td class="sat"></td><td class="sun"></td><td></td><td></td><td></td>
+                </tr>
+                <tr>
+                  <td class="name-col">高橋</td>
+                  <td></td><td></td><td></td><td class="sat"></td><td class="sun"></td><td></td><td></td><td></td>
+                </tr>
+                <tr>
+                  <td class="name-col">田中</td>
+                  <td></td><td></td><td></td><td class="sat"></td><td class="sun"></td><td></td><td></td><td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="mock-hint">① 記号をえらんで、マスをタップ　② 残りは「自動作成」におまかせ</p>
+          <div class="mock-pal" role="group" aria-label="シフト記号のパレット（デモ）">
+            <button type="button" class="pl-chip">早①</button>
+            <button type="button" class="pl-chip sel">日①</button>
+            <button type="button" class="pl-chip">遅①</button>
+            <button type="button" class="pl-chip">夜</button>
+            <button type="button" class="pl-chip">明</button>
+            <button type="button" class="pl-chip off">公</button>
+          </div>
+          <div class="mock-foot">
+            <button class="mock-reset" type="button">やり直す</button>
+            <span class="done-pill">✓ 自動作成が完了しました</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="sec-faq" style="background:var(--cream);">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="eyebrow">Q&amp;A</p>
+      <h2>よくいただくご質問</h2>
+    </div>
+    <div class="faq-list rv">
+      <details class="faq">
+        <summary><span class="q">Q</span>パソコンに詳しくなくても使えますか？</summary>
+        <div class="faq-a"><span class="a">A</span><p>はい。画面の案内にそって進めるだけで作成できるよう設計しています。シフト表の手直しも、記号をえらんでマスを塗るだけです。</p></div>
+      </details>
+      <details class="faq">
+        <summary><span class="q">Q</span>うちの事業所の細かい決まりにも対応できますか？</summary>
+        <div class="faq-a"><span class="a">A</span><p>事業所ごとに様々なルールを構築可能です。職員さんごとの条件（勤務できるシフト、連続夜勤の希望、土日どちらか休み など）だけでなく、常勤非常勤でシフトルールを変えるなど、細かく設定できます。</p></div>
+      </details>
+      <details class="faq">
+        <summary><span class="q">Q</span>自動作成の結果が、条件に合わなかったら？</summary>
+        <div class="faq-a"><span class="a">A</span><p>守れなかったマスがハイライトされ、どの条件が守れなかったのかがわかります。そのまま手で直すことも、条件の優先順位を変えて作り直すこともできます。</p></div>
+      </details>
+      <details class="faq">
+        <summary><span class="q">Q</span>なにか特別な機械やソフトは必要ですか？</summary>
+        <div class="faq-a"><span class="a">A</span><p>いいえ。ふだんお使いのパソコンのブラウザだけで動きます。インストールは不要です。</p></div>
+      </details>
+      <details class="faq">
+        <summary><span class="q">Q</span>料金はいくらですか？</summary>
+        <div class="faq-a"><span class="a">A</span><p>お問い合わせください。事業所の規模やご利用のかたちに合わせてご案内します。</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 締めCTA ============ -->
+<!-- TODO(フォーム送信): contact.html は見た目のみ（送信機能は準備中）。送信先が決まり次第 contact.html 側を接続する -->
+<section class="sec-cta" id="contact">
+  <svg class="wave" viewBox="0 0 1440 44" preserveAspectRatio="none" aria-hidden="true" style="display:block; background:var(--cream);"><path d="M0,22 C240,44 480,0 720,14 C960,28 1200,40 1440,16 L1440,44 L0,44 Z" fill="#e8f4ea"/></svg>
+  <div class="wrap cta-box">
+    <div class="cta-txt rv">
+      <h2>シフトづくりの毎月の数日を、<br>現場のための時間に。</h2>
+      <p class="cta-lead">導入のご相談・デモのご希望など、お気軽にお問い合わせください。</p>
+      <div class="cta-btns">
+        <a class="btn btn-primary" href="contact.html">お問い合わせフォームへ</a>
+      </div>
+    </div>
+    <div class="cta-photo-wrap rv">
+      <div class="cta-photo">
+        <img src="assets/photos/jp-care-smile.jpg" alt="介護職員と笑顔の高齢女性、ご家族がリビングで寄り添う様子（イメージ）" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ フッター ============ -->
+<footer class="site-foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand">らくシフト<span class="en">rakushift</span></div>
+    <div class="foot-right">
+      <!-- TODO(公開前に確認): リベライズのサイトURLが https://libelize.com/ で正しいか要確認（同名の別会社あり） -->
+      提供：<a href="https://libelize.com/" target="_blank" rel="noopener">株式会社リベライズ</a>
+      <div class="foot-copy">© 2026 株式会社リベライズ</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ふわっと表示（対応していない環境ではそのまま表示）
+(function(){
+  var els = document.querySelectorAll(".rv");
+  if (!("IntersectionObserver" in window)) {
+    Array.prototype.forEach.call(els, function(el){ el.classList.add("on"); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add("on"); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  Array.prototype.forEach.call(els, function(el){ io.observe(el); });
+})();
+
+// 操作できるモックアップ（ヒーローと「パソコンが苦手でも」の2か所）:
+// パレットで記号をえらんでマスをタップ → 残りは「自動作成」
+(function(){
+  // 完成形（自動作成が空きマスに入れる答え）。夜→明→公のセットなど製品と同じ雰囲気
+  var SOLUTION = [
+    ["夜","明","公","日①","日①","夜","明","公"],
+    ["日①","夜","明","公","早①","日①","夜","明"],
+    ["早①","日①","夜","明","公","遅①","日①","夜"],
+    ["遅①","早①","日①","夜","明","公","早①","日①"]
+  ];
+  var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function initMock(card){
+  var btn = card.querySelector(".mock-btn");
+  var label = btn.querySelector(".mb-label");
+  var resetBtn = card.querySelector(".mock-reset");
+  var rows = card.querySelectorAll("tbody tr");
+  var grid = []; // [row][col] = td
+  rows.forEach(function(tr){ grid.push([].slice.call(tr.querySelectorAll("td:not(.name-col)"))); });
+
+  var sel = "日①";
+  var chips = card.querySelectorAll(".mock-pal .pl-chip");
+  chips.forEach(function(chip){
+    chip.addEventListener("click", function(){
+      chips.forEach(function(c){ c.classList.remove("sel"); });
+      chip.classList.add("sel");
+      sel = chip.textContent;
+    });
+  });
+
+  function setCell(td, sym){
+    td.textContent = sym;
+    td.classList.toggle("off", sym === "公");
+  }
+  function running(){ return card.classList.contains("mock-run"); }
+
+  // マスをタップ: 選択中の記号を置く／同じ記号ならタップで消す
+  grid.forEach(function(row){
+    row.forEach(function(td){
+      td.addEventListener("click", function(){
+        if (running()) return;
+        card.classList.remove("mock-done");
+        if (td.textContent === sel) { setCell(td, ""); td.classList.remove("off"); }
+        else setCell(td, sel);
+      });
+    });
+  });
+
+  var timers = [];
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+  function finish(){
+    card.classList.remove("mock-run");
+    card.classList.add("mock-done");
+    label.textContent = "自動作成";
+  }
+  btn.addEventListener("click", function(){
+    if (running()) return;
+    clearTimers();
+    // 空きマスだけを日ごと（列ごと）に埋める＝入力済みの「希望」は動かさない
+    var targets = [];
+    for (var c = 0; c < SOLUTION[0].length; c++) {
+      for (var r = 0; r < SOLUTION.length; r++) {
+        if (grid[r][c].textContent === "") targets.push([grid[r][c], SOLUTION[r][c]]);
+      }
+    }
+    if (!targets.length) { finish(); return; }
+    if (reduced) { targets.forEach(function(t){ setCell(t[0], t[1]); }); finish(); return; }
+    card.classList.remove("mock-done");
+    card.classList.add("mock-run");
+    label.textContent = "作成中…";
+    targets.forEach(function(t){ setCell(t[0], t[1]); t[0].classList.add("cell-wait"); });
+    targets.forEach(function(t, i){
+      timers.push(setTimeout(function(){ t[0].classList.remove("cell-wait"); }, 420 + i * 45));
+    });
+    timers.push(setTimeout(finish, 420 + targets.length * 45 + 320));
+  });
+
+  resetBtn.addEventListener("click", function(){
+    if (running()) return;
+    clearTimers();
+    grid.forEach(function(row){ row.forEach(function(td){ setCell(td, ""); td.classList.remove("off","cell-wait"); }); });
+    card.classList.remove("mock-done");
+  });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll(".shift-card.mock"), initMock);
+})();
+
+// ヘッダー: スクロールで影
+(function(){
+  var head = document.getElementById("siteHead");
+  function upd(){ head.classList.toggle("scrolled", window.scrollY > 8); }
+  window.addEventListener("scroll", upd, { passive: true });
+  upd();
+})();
+</script>
+</body>
+</html>
