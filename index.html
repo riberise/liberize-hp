@@ -271,6 +271,10 @@
     letter-spacing: .1em;
     max-width: 36em;
   }
+  /* VISIONの補足文はPC幅では1行で表示（スマホは折り返し） */
+  @media (min-width: 1000px) {
+    #tenbou .note { max-width: none; white-space: nowrap; }
+  }
 
   /* ---------- 五つの約束 ---------- */
   .vlist {
@@ -509,7 +513,7 @@
 
 <main>
   <div class="hero">
-    <img src="hero.jpg" alt="介護士と家族に囲まれて笑顔をみせる高齢の女性">
+    <img src="hero.jpg" alt="介護士と一緒に住宅街を散歩する、車椅子に乗った高齢の男性">
     <div class="heroText">
       <div class="frame">
         <span class="en">Liberize Inc.</span>
